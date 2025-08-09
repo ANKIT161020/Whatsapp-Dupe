@@ -1,0 +1,39 @@
+# Node.js
+node_modules/
+dist/
+build/
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.pnpm-store/
+*.tgz
+
+# VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# MongoDB (if any local DB files are created, though typically not for Atlas)
+.mongodb/
+data/db/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Test coverage reports
+coverage/
+
+# Compiled TypeScript files (if not in dist/ or build/)
+*.js
+*.d.ts
+!src/**/*.js # Exclude .js files in src if you're directly running ts-node and want them in repo
+!src/**/*.d.ts # Exclude .d.ts files in src if you're directly running ts-node and want them in repo
