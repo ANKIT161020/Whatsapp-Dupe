@@ -2,16 +2,10 @@ import React from 'react';
 import ChatHeader from './ChatHeader';
 import ChatMessages from './ChatMessages';
 import ChatInput from './ChatInput';
-
-// Interfaces for component props
-interface IConversation {
-  wa_id: string;
-  name: string;
-  profilePicture: string;
-}
+import type { IConversationSummary } from '../../services/messageAPI';
 
 interface ChatWindowProps {
-  conversation: IConversation;
+  conversation: IConversationSummary;
   onBack: () => void;
 }
 
@@ -26,8 +20,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversation, onBack }) => {
       }}
     >
       <ChatHeader conversation={conversation} onBack={onBack} />
-      <ChatMessages />
-      <ChatInput />
+      <ChatMessages selectedConversationWaId={conversation.wa_id} />
+      <ChatInput selectedConversationWaId={conversation.wa_id} />
     </div>
   );
 };

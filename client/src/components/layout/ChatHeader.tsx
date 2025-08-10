@@ -1,26 +1,37 @@
 import React from 'react';
-import { ChevronLeft, Search, MoreVertical } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import SearchIcon from "../../assets/SearchIcon.png"
+import UserIcon from "../../assets/UserIcon.png"
+import EllipsisIcon from "../../assets/EllipsisIcon.png"
+import type { IConversationSummary } from '../../services/messageAPI';
+import { transformConversationForUI } from '../../utils/conversationUtils';
 
-interface IConversation {
-  wa_id: string;
-  name: string;
-  profilePicture: string;
-}
-
-const ChatHeader: React.FC<{ conversation: IConversation; onBack: () => void }> = ({ conversation, onBack }) => {
+const ChatHeader: React.FC<{ conversation: IConversationSummary; onBack: () => void }> = ({ conversation, onBack }) => {
+  const uiConversation = transformConversationForUI(conversation);
+  
   return (
-    <div className="flex items-center justify-between p-4 bg-[#1e2021] shadow-sm">
-      <div className="flex items-center">
+    <div className="flex items-center justify-between py-2 px-4 bg-[#161717] shadow-sm">
+      <div className="flex items-center ">
         <ChevronLeft onClick={onBack} className="w-6 h-6 mr-4 text-gray-400 cursor-pointer md:hidden" />
-        <img src={conversation.profilePicture} alt={`${conversation.name}'s profile`} className="w-10 h-10 rounded-full" />
+        <div className='flex items-center justify-center bg-[#1d1f1f]  rounded-full w-13 h-13'>
+        <img src={UserIcon} alt={`${uiConversation.name}'s profile`} className="w-10 h-9 rounded-full" />
+        </div>
         <div className="ml-4">
-          <h2 className="font-semibold text-white">{conversation.name}</h2>
+          <h2 className="font-semibold text-white">{uiConversation.name}</h2>
           <p className="text-xs text-gray-400">Last seen recently</p>
         </div>
       </div>
-      <div className="flex items-center text-gray-400">
-        <Search className="w-5 h-5 cursor-pointer mx-2" />
-        <MoreVertical className="w-5 h-5 cursor-pointer ml-2" />
+      <div className="flex items-center gap-5 text-gray-400">
+      <img 
+          src={SearchIcon} 
+          alt="New Chat" 
+          className="w-8 h-8 cursor-pointer hover:opacity-70 transition-opacity object-contain" 
+        />
+        <img 
+          src={EllipsisIcon} 
+          alt="New Chat" 
+          className="w-8 h-8 cursor-pointer hover:opacity-70 transition-opacity object-contain" 
+        />
       </div>
     </div>
   );

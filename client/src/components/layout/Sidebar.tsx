@@ -3,20 +3,15 @@ import SidebarHeader from './SidebarHeader';
 import SidebarSearch from './SidebarSearch';
 import SidebarTabs from './SidebarTabs';
 import ConversationsList from './ConversationsList';
-
-// Define a type for the conversation item
-interface IConversation {
-    wa_id: string;
-    name: string;
-}
+import type { IConversationSummary } from '../../services/messageAPI';
 
 interface SidebarProps {
-    onSelectConversation: (conversation: IConversation | null) => void;
+    onSelectConversation: (conversation: IConversationSummary | null) => void;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ onSelectConversation }) => {
     return (
-        <div className="flex flex-col h-full bg-[#161717] md:border-r md:border-[#272828]">
+        <div className="flex flex-col h-full bg-[#161717] md:border-r md:border-[#272828] max-w-[350px] w-full">
             {/* Top section of the sidebar */}
             <div className="bg-[#10191c]">
               <SidebarHeader />

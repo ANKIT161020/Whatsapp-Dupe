@@ -1,21 +1,5 @@
 import { createSlice,type PayloadAction} from '@reduxjs/toolkit';
-
-// Define the shape of a conversation item, matching what your backend returns
-// For simplicity, we'll use IMessage as the conversation summary item, as per your backend's getConversationsSummary
-interface IConversationSummary {
-  _id: string;
-  id: string; // Latest message ID
-  wa_id: string; // Contact's WhatsApp ID
-  contactName?: string;
-  from: string;
-  to: string;
-  type: string;
-  text?: { body: string };
-  timestamp: string; // ISO date string
-  status: 'sent' | 'delivered' | 'read';
-  createdAt: string;
-  updatedAt: string;
-}
+import type { IConversationSummary } from '../../../services/messageAPI';
 
 interface ConversationsState {
   conversations: IConversationSummary[];

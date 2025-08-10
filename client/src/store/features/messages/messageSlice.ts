@@ -1,22 +1,5 @@
 import { createSlice,type PayloadAction } from '@reduxjs/toolkit';
-
-// Define the shape of a message item, matching your backend's IMessage
-interface IMessage {
-  _id: string;
-  id: string; // Unique WhatsApp message ID
-  wa_id: string; // Contact's WhatsApp ID
-  contactName?: string;
-  from: string;
-  to: string;
-  type: string;
-  text?: { body: string };
-  image?: { mime_type?: string; sha256?: string; id?: string; link?: string; };
-  timestamp: string; // ISO date string
-  status: 'sent' | 'delivered' | 'read';
-  context?: { message_id?: string; };
-  createdAt: string;
-  updatedAt: string;
-}
+import type { IMessage } from '../../../services/messageAPI';
 
 interface MessagesState {
   messages: IMessage[];

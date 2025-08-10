@@ -1,5 +1,17 @@
 import { useState } from 'react';
-import { MessageCircle, Users, Settings } from 'lucide-react';
+
+// Import custom assets
+import ChatIcon from '../../assets/ChatIcon.png';
+import ChatOutlineIcon from '../../assets/ChatOutlineIcon.png';
+import StatusIcon from '../../assets/StatusIcon.png';
+import StatusFilledIcon from '../../assets/StatusFilledIcon.png';
+import ChannelIcon from '../../assets/ChannelIcon.png';
+import ChannelFilledIcon from '../../assets/ChannelFilledIcon.png';
+import CommunityIcon from '../../assets/CommunityIcon.png';
+import CommunityFilledIcon from '../../assets/CommunityFilledIcon.png';
+import SettingIcon from '../../assets/SettingIcon.png';
+import SettingFilledIcon from '../../assets/SettingFilledIcon.png';
+import UserIcon from "../../assets/UserIcon.png"
 
 const LeftIcons = () => {
   // Use state to manage the active icon and a mock unread count
@@ -31,14 +43,19 @@ const LeftIcons = () => {
           }
         `}
       </style>
-      <div className="flex flex-col items-center gap-2 pt-3">
+      <div className="flex flex-col items-center gap-1 pt-3">
+        {/* Chat Icon */}
         <div
           className={`relative p-2 rounded-full cursor-pointer hover:bg-[#292a2a] transition-colors ${
             isActive('chats') ? 'bg-[#292a2a]' : ''
           }`}
           onClick={() => setActiveIcon('chats')}
         >
-          <MessageCircle className="w-6 h-6" />
+          <img 
+            src={isActive('chats') ? ChatIcon : ChatOutlineIcon} 
+            alt="Chats" 
+            className="w-8 h-8 object-contain"
+          />
           {/* Conditional unread count badge */}
           {isActive('chats') && unreadCount > 0 && (
             <span className="absolute top-2 right-1 inline-flex items-center justify-center h-5 w-5 text-xs leading-none text-black transform translate-x-1/2 -translate-y-1/2 bg-[#21c063] rounded-full">
@@ -46,29 +63,47 @@ const LeftIcons = () => {
             </span>
           )}
         </div>
+
+        {/* Status Icon */}
         <div
           className={`p-2 rounded-full cursor-pointer hover:bg-[#292a2a] transition-colors ${
             isActive('status') ? 'bg-[#292a2a]' : ''
           }`}
           onClick={() => setActiveIcon('status')}
         >
-          <MessageCircle className="w-6 h-6" />
+          <img 
+            src={isActive('status') ? StatusFilledIcon : StatusIcon} 
+            alt="Status" 
+            className="w-8 h-8 object-contain"
+          />
         </div>
+
+        {/* Channels Icon */}
         <div
           className={`p-2 rounded-full cursor-pointer hover:bg-[#292a2a] transition-colors ${
             isActive('channels') ? 'bg-[#292a2a]' : ''
           }`}
           onClick={() => setActiveIcon('channels')}
         >
-          <Users className="w-6 h-6" />
+          <img 
+            src={isActive('channels') ? ChannelFilledIcon : ChannelIcon} 
+            alt="Channels" 
+            className="w-8 h-8 object-contain"
+          />
         </div>
+
+        {/* Communities Icon */}
         <div
           className={`p-2 rounded-full cursor-pointer hover:bg-[#292a2a] transition-colors ${
             isActive('communities') ? 'bg-[#292a2a]' : ''
           }`}
           onClick={() => setActiveIcon('communities')}
         >
-          <Users className="w-6 h-6" />
+          <img 
+            src={isActive('communities') ? CommunityFilledIcon : CommunityIcon} 
+            alt="Communities" 
+            className="w-8 h-8 object-contain"
+          />
         </div>
         <hr className="w-10 border-t border-gray-600 my-4" />
         <div
@@ -82,27 +117,31 @@ const LeftIcons = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col items-center gap-4 pb-5">
+      <div className="flex flex-col items-center gap-2 pb-5">
+        {/* Settings Icon */}
         <div
           className={`p-2 rounded-full cursor-pointer hover:bg-[#292a2a] transition-colors ${
             isActive('settings') ? 'bg-[#292a2a]' : ''
           }`}
           onClick={() => setActiveIcon('settings')}
         >
-          <Settings className="w-6 h-6" />
+          <img 
+            src={isActive('settings') ? SettingFilledIcon : SettingIcon} 
+            alt="Settings" 
+            className="w-8 h-8 object-contain"
+          />
         </div>
         <div
-          className={`relative w-8 h-8 rounded-full cursor-pointer ${
+          className={`relative w-12 h-12 rounded-full bg-[#161717] flex align-middle justify-center items-center cursor-pointer ${
             isActive('profile') ? 'ring-2 ring-white' : ''
           }`}
           onClick={() => setActiveIcon('profile')}
         >
           <img
-            src="https://placehold.co/40x40/34495e/ffffff?text=A"
+            src= {UserIcon}
             alt="User Profile"
-            className="rounded-full"
+            className="rounded-full w-8 h-7"
           />
-          <span className="absolute bottom-0 right-0 w-3 h-3 bg-[#21c063] rounded-full ring-2 ring-[#1d1f1f]"></span>
         </div>
       </div>
     </div>
