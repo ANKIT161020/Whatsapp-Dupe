@@ -12,8 +12,7 @@
     "format": "prettier --write \"src/**/*.ts\" \"__tests__/**/*.ts\"",
     "test": "jest --runInBand",
     "test:watch": "jest --watch --runInBand",
-    "test:coverage": "jest --coverage --runInBand",
-    "prepare": "husky"
+    "test:coverage": "jest --coverage --runInBand"
   },
   "keywords": [
     "nodejs",
