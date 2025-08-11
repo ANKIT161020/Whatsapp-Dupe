@@ -33,8 +33,8 @@ Thumbs.db
 coverage/
 
 # Compiled TypeScript files (if not in dist/ or build/)
-*.js
-*.d.ts
-!src/**/*.js # Exclude .js files in src if you're directly running ts-node and want them in repo
-!src/**/*.d.ts # Exclude .d.ts files in src if you're directly running ts-node and want them in repo
-.vercel
+# *.js
+# *.d.ts
+# !src/**/*.js # Exclude .js files in src if you're directly running ts-node and want them in repo
+# src/**/*.d.ts # Exclude .d.ts files in src if you're directly running ts-node and want them in repo
+# .vercel
