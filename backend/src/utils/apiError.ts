@@ -1,9 +1,6 @@
-// Custom error class for operational errors
-
 class ApiError extends Error {
-  public statusCode: number;
-
-  public isOperational: boolean;
+  statusCode: number;
+  isOperational: boolean;
 
   constructor(statusCode: number, message: string, isOperational = true, stack = '') {
     super(message);
@@ -11,7 +8,7 @@ class ApiError extends Error {
     this.isOperational = isOperational;
     if (stack) {
       this.stack = stack;
-    } else {
+    } else if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor);
     }
   }

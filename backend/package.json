@@ -15,6 +15,10 @@
     "render-build": "npm install && npm run build",
     "test:coverage": "jest --coverage --runInBand"
   },
+  "engines": {
+    "node": "18.x",
+    "npm": ">=8.0.0"
+  },
   "keywords": [
     "nodejs",
     "express",

@@ -1,19 +1,21 @@
-import { createLogger, format, transports, Logform } from 'winston'; // Import Logform for better typing
+import { createLogger, format, transports, Logform } from 'winston';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import util from 'util';
 import { red, yellow, green, blue, magenta } from 'colorette';
-import config from '@config/index'; // Ensure this path is correct for your config file
-import  {APP_ENV} from '@config/constants'; // Ensure this path is correct
-import * as SourceMapSupport from "source-map-support"
+import config from '@config/index';
+import { APP_ENV } from '@config/constants';
+import * as SourceMapSupport from 'source-map-support';
 
 // Linking trace support 
-SourceMapSupport.install()
+SourceMapSupport.install();
+
+// Use require to get __dirname in CommonJS environment
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const currentFilePath = require.main?.filename || __filename;
+const __dirname = path.dirname(currentFilePath);
 
 /**
  * Colorizes the log level for console output.
- * @param {string} level - The log level (e.g., 'error', 'info').
- * @returns {string} The colorized level string.
  */
 const colorizeLevel = (level: string): string => {
     switch (level.toUpperCase()) {
@@ -26,37 +28,21 @@ const colorizeLevel = (level: string): string => {
         case 'DEBUG':
             return green(level.toUpperCase());
         default:
-            return level.toUpperCase();
+            return magenta(level.toUpperCase());
     }
 };
 
 /**
  * Custom format for console transport.
- * @param {Logform.TransformableInfo} info - Log information object from Winston.
- * @returns {string} Formatted log string for console.
  */
 const consoleLogFormat = format.printf((info: Logform.TransformableInfo): string => {
-    // Explicitly cast timestamp and meta to their expected types
-    const { level, message, timestamp, meta = {} } = info;
-
-    const customLevel = colorizeLevel(level);
-    const customTimestamp = green(timestamp as string); // Cast timestamp to string
-    const customMessage = message;
-
-    // Ensure meta is treated as a record for Object.keys
-    const metaObject = meta as Record<string, unknown>;
-    const customMeta = Object.keys(metaObject).length > 0
-        ? `\n${magenta('META')} ${util.inspect(metaObject, { showHidden: false, depth: null, colors: true })}`
-        : '';
-
-    const customLog = `${customLevel} [${customTimestamp}] ${customMessage}${customMeta}\n`;
-
-    return customLog;
+    const { level, message, timestamp, meta = {}  } = info;
+    const metaString = Object.keys(meta as object).length ? `\n${util.inspect(meta, { colors: true, depth: 3 })}` : '';
+    return `${timestamp} [${colorizeLevel(level)}]: ${message}${metaString}`;
 });
 
 /**
  * Configures console transport based on environment.
- * @returns {Array<transports.ConsoleTransportInstance>} Array of console transports.
  */
 function consoleTransport(): transports.ConsoleTransportInstance[] {
     if (config.env === APP_ENV.DEVELOPMENT) {
@@ -72,17 +58,11 @@ function consoleTransport(): transports.ConsoleTransportInstance[] {
 
 /**
  * Custom format for file transport (JSON output).
- * @param {Logform.TransformableInfo} info - Log information object from Winston.
- * @returns {string} JSON string of log data.
  */
 const fileLogFormat = format.printf((info: Logform.TransformableInfo): string => {
-    // Explicitly cast timestamp and meta to their expected types
     const { level, message, timestamp, meta = {} } = info;
-
-    // Ensure meta is treated as a record for Object.entries
     const metaObject = meta as Record<string, unknown>;
 
-    // Handle Error objects in meta for better logging
     const logMeta = Object.entries(metaObject).reduce((acc: Record<string, unknown>, [key, value]: [string, unknown]) => {
         if (value instanceof Error) {
             acc[key] = {
@@ -96,12 +76,12 @@ const fileLogFormat = format.printf((info: Logform.TransformableInfo): string =>
             acc[key] = value;
         }
         return acc;
-    }, {} as Record<string, unknown>); // Initialize acc with explicit type
+    }, {} as Record<string, unknown>);
 
     const logData = {
         level: level.toUpperCase(),
         message,
-        timestamp: timestamp as string, // Cast timestamp to string
+        timestamp: timestamp as string,
         meta: logMeta
     };
 
@@ -110,10 +90,9 @@ const fileLogFormat = format.printf((info: Logform.TransformableInfo): string =>
 
 /**
  * Configures file transport.
- * @returns {Array<transports.FileTransportInstance>} Array of file transports.
  */
 function fileTransport(): transports.FileTransportInstance[] {
-    const logDirectory = path.join(__dirname, '..', '..', 'logs');
+    const logDirectory = path.resolve(process.cwd(), 'logs');
 
     return [
         new transports.File({
