@@ -3,7 +3,13 @@
   "compilerOptions": {
     "outDir": "./dist",
     "removeComments": true,
-    "sourceMap": false
+    "sourceMap": false,
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "__tests__"]
 }

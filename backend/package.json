@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "This is a backend server for whatsapp",
   "main": "dist/server.js",
+  "type":"commonjs",
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node-dev --respawn --transpile-only  --no-notify -r tsconfig-paths/register src/server.ts",

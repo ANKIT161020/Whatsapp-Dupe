@@ -35,11 +35,16 @@ const config: Config = {
         ? process.env.MONGODB_URI_TEST || ''
         : process.env.MONGODB_URI || '',
     options: {
-      serverSelectionTimeoutMS: 5000,
-      maxPoolSize: 10,
-      minPoolSize: 1,
-      bufferCommands: false, // Disable mongoose buffering for production
-      bufferMaxEntries: 0,   // Disable mongoose buffering for production
+      // Updated MongoDB connection options for newer versions
+      serverSelectionTimeoutMS: 5000,    // Keep trying to send operations for 5 seconds
+      socketTimeoutMS: 45000,            // Close sockets after 45 seconds of inactivity
+      maxPoolSize: 10,                   // Maintain up to 10 socket connections
+      minPoolSize: 1,                    // Maintain at least 1 socket connection
+      maxIdleTimeMS: 30000,              // Close connections after 30 seconds of inactivity
+      
+      // Remove these deprecated options:
+      // bufferCommands: false,          // Deprecated - not needed
+      // bufferMaxEntries: 0,            // Deprecated - this was causing the error
     } as ConnectOptions,
   },
   jwt: {

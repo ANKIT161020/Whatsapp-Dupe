@@ -1,116 +1,87 @@
-import { createLogger, format, transports, Logform } from 'winston';
+import winston from 'winston';
 import path from 'path';
-import util from 'util';
-import { red, yellow, green, blue, magenta } from 'colorette';
-import config from '@config/index';
-import { APP_ENV } from '@config/constants';
-import * as SourceMapSupport from 'source-map-support';
+import { fileURLToPath } from 'url';
 
-// Linking trace support 
-SourceMapSupport.install();
+// Remove the problematic __dirname redeclaration
+// const currentFilePath = fileURLToPath(import.meta.url);
+// const __dirname = path.dirname(currentFilePath); // This line causes the error
 
-// Use require to get __dirname in CommonJS environment
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const currentFilePath = require.main?.filename || __filename;
-const __dirname = path.dirname(currentFilePath);
+// Use the existing __dirname directly (it's available in CommonJS)
+const logDir = path.join(process.cwd(), 'logs');
 
-/**
- * Colorizes the log level for console output.
- */
-const colorizeLevel = (level: string): string => {
-    switch (level.toUpperCase()) {
-        case 'ERROR':
-            return red(level.toUpperCase());
-        case 'INFO':
-            return blue(level.toUpperCase());
-        case 'WARN':
-            return yellow(level.toUpperCase());
-        case 'DEBUG':
-            return green(level.toUpperCase());
-        default:
-            return magenta(level.toUpperCase());
-    }
-};
-
-/**
- * Custom format for console transport.
- */
-const consoleLogFormat = format.printf((info: Logform.TransformableInfo): string => {
-    const { level, message, timestamp, meta = {}  } = info;
-    const metaString = Object.keys(meta as object).length ? `\n${util.inspect(meta, { colors: true, depth: 3 })}` : '';
-    return `${timestamp} [${colorizeLevel(level)}]: ${message}${metaString}`;
-});
-
-/**
- * Configures console transport based on environment.
- */
-function consoleTransport(): transports.ConsoleTransportInstance[] {
-    if (config.env === APP_ENV.DEVELOPMENT) {
-        return [
-            new transports.Console({
-                level: 'debug',
-                format: format.combine(format.timestamp(), consoleLogFormat)
-            })
-        ];
-    }
-    return [];
+// Ensure log directory exists
+import fs from 'fs';
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
 }
 
-/**
- * Custom format for file transport (JSON output).
- */
-const fileLogFormat = format.printf((info: Logform.TransformableInfo): string => {
-    const { level, message, timestamp, meta = {} } = info;
-    const metaObject = meta as Record<string, unknown>;
+// Define log format
+const logFormat = winston.format.combine(
+  winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+  winston.format.errors({ stack: true }),
+  winston.format.printf(({ timestamp, level, message, stack, ...meta }) => {
+    let logMessage = `${timestamp} [${level.toUpperCase()}]: ${message}`;
+    
+    // Add stack trace for errors
+    if (stack) {
+      logMessage += `\n${stack}`;
+    }
+    
+    // Add metadata if present
+    if (Object.keys(meta).length > 0) {
+      logMessage += `\n${JSON.stringify(meta, null, 2)}`;
+    }
+    
+    return logMessage;
+  })
+);
 
-    const logMeta = Object.entries(metaObject).reduce((acc: Record<string, unknown>, [key, value]: [string, unknown]) => {
-        if (value instanceof Error) {
-            acc[key] = {
-                name: value.name,
-                message: value.message,
-                stack: value.stack || 'No stack trace available'
-            };
-        } else if (typeof value === 'object' && value !== null) {
-            acc[key] = JSON.stringify(value);
-        } else {
-            acc[key] = value;
-        }
-        return acc;
-    }, {} as Record<string, unknown>);
-
-    const logData = {
-        level: level.toUpperCase(),
-        message,
-        timestamp: timestamp as string,
-        meta: logMeta
-    };
-
-    return JSON.stringify(logData);
+// Create Winston logger instance
+const logger = winston.createLogger({
+  level: process.env.LOG_LEVEL || 'info',
+  format: logFormat,
+  defaultMeta: { service: 'whatsapp-backend' },
+  transports: [
+    // Console transport
+    new winston.transports.Console({
+      format: winston.format.combine(
+        winston.format.colorize(),
+        logFormat
+      )
+    }),
+    
+    // File transport for error logs
+    new winston.transports.File({
+      filename: path.join(logDir, 'error.log'),
+      level: 'error',
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+    
+    // File transport for all logs
+    new winston.transports.File({
+      filename: path.join(logDir, 'combined.log'),
+      maxsize: 5242880, // 5MB
+      maxFiles: 5,
+    }),
+  ],
 });
 
-/**
- * Configures file transport.
- */
-function fileTransport(): transports.FileTransportInstance[] {
-    const logDirectory = path.resolve(process.cwd(), 'logs');
+// Handle uncaught exceptions and unhandled rejections
+logger.exceptions.handle(
+  new winston.transports.File({
+    filename: path.join(logDir, 'exceptions.log'),
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+  })
+);
 
-    return [
-        new transports.File({
-            filename: path.join(logDirectory, `${config.env}.log`),
-            level: 'info',
-            format: format.combine(format.timestamp(), fileLogFormat),
-            maxsize: 5242880,
-            maxFiles: 5,
-            tailable: true
-        })
-    ];
-}
+logger.rejections.handle(
+  new winston.transports.File({
+    filename: path.join(logDir, 'rejections.log'),
+    maxsize: 5242880, // 5MB
+    maxFiles: 5,
+  })
+);
 
-// Create the logger instance
-export default createLogger({
-    defaultMeta: {
-        service: APP_ENV.APP_NAME
-    },
-    transports: [...fileTransport(), ...consoleTransport()],
-    exitOnError: false,
-});
+export default logger;

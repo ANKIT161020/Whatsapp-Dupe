@@ -30,6 +30,6 @@
       "@api/*": ["api/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/types/**/*.d.ts", "__tests__/**/*.ts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["src/**/*", "src/types/**/*.d.ts"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts", "**/*.spec.ts", "__tests__"]
 }
