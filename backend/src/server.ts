@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import config from '@config/index';
 import logger from '@utils/logger';
 import app from './app';
+import { number } from 'joi';
 
 let server: any; // Type for the HTTP server instance
 
@@ -19,12 +20,19 @@ const connectToDatabase = async () => {
 const startServer = async () => {
   await connectToDatabase();
 
-  server = app.listen(config.port, () => {
-    logger.info('Server is running',{
-      meta:{
-        PORT: config.port,
-        SERVER_URL : `http://localhost:${config.port}`,
-        ENVIRONMENT: config.env
+  // Use Render's PORT environment variable or fallback to config port
+  const PORT = Number(process.env.PORT) || config.port;
+  
+  // Bind to 0.0.0.0 for Render (required for external access)
+  server = app.listen(PORT, '0.0.0.0', () => {
+    logger.info('Server is running', {
+      meta: {
+        PORT: PORT,
+        SERVER_URL: process.env.NODE_ENV === 'production' 
+          ? `https://${process.env.RENDER_SERVICE_NAME || 'your-app'}.onrender.com`
+          : `http://localhost:${PORT}`,
+        ENVIRONMENT: config.env,
+        PLATFORM: 'Render'
       }
     });
   });
@@ -55,13 +63,12 @@ process.on('unhandledRejection', (reason: Error) => {
   exitHandler();
 });
 
-// Handle SIGTERM signal (e.g., from Docker, Kubernetes)
+// Handle SIGTERM signal (e.g., from Render, Docker, Kubernetes)
 process.on('SIGTERM', () => {
   logger.info('SIGTERM received');
   if (server) {
     server.close(() => {
       logger.info('Process terminated!');
-      // Optional: Close database connections here if they're not closed by server.close()
       mongoose.connection
         .close()
         .then(() => {

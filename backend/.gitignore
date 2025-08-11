@@ -37,3 +37,4 @@ coverage/
 *.d.ts
 !src/**/*.js # Exclude .js files in src if you're directly running ts-node and want them in repo
 !src/**/*.d.ts # Exclude .d.ts files in src if you're directly running ts-node and want them in repo
+.vercel

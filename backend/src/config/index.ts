@@ -1,13 +1,19 @@
 // Centralized application configuration
-import 'dotenv-safe/config'; // Corrected import for dotenv-safe
-import { ConnectOptions } from 'mongoose'; // Import ConnectOptions
+// Use regular dotenv for production (Render provides env vars)
+if (process.env.NODE_ENV === 'production') {
+  require('dotenv').config();
+} else {
+  require('dotenv-safe/config');
+}
+
+import { ConnectOptions } from 'mongoose';
 
 interface Config {
   env: string;
   port: number;
   mongoose: {
     url: string;
-    options: ConnectOptions; // Use ConnectOptions here
+    options: ConnectOptions;
   };
   jwt: {
     secret: string;
@@ -29,22 +35,21 @@ const config: Config = {
         ? process.env.MONGODB_URI_TEST || ''
         : process.env.MONGODB_URI || '',
     options: {
-      // Explicitly define some common options to help TypeScript infer the correct type.
-      // These options are valid for Mongoose 6+ and are often good defaults.
-      serverSelectionTimeoutMS: 5000, // Keep trying to send operations for 5 seconds
-      maxPoolSize: 10, // Maintain up to 10 socket connections
-      minPoolSize: 1, // Minimum of 1 connection in the pool
-      // autoIndex: true, // Set to false in production to prevent performance issues
-    } as ConnectOptions, // Explicitly assert type here to ensure correctness
+      serverSelectionTimeoutMS: 5000,
+      maxPoolSize: 10,
+      minPoolSize: 1,
+      bufferCommands: false, // Disable mongoose buffering for production
+      bufferMaxEntries: 0,   // Disable mongoose buffering for production
+    } as ConnectOptions,
   },
   jwt: {
-    secret: process.env.JWT_SECRET || 'supersecretjwtkey_please_change_this_in_production',
+    secret: process.env.JWT_SECRET || 'fallback-secret-key',
     accessExpirationMinutes: parseInt(process.env.JWT_ACCESS_EXPIRATION_MINUTES || '30', 10),
     refreshExpirationDays: parseInt(process.env.JWT_REFRESH_EXPIRATION_DAYS || '7', 10),
   },
   rateLimit: {
     windowMs: 15 * 60 * 1000, // 15 minutes
-    max: 100, // Limit each IP to 100 requests per windowMs
+    max: 100, // limit each IP to 100 requests per windowMs
   },
 };
 
