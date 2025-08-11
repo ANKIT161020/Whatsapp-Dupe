@@ -2,7 +2,7 @@
 
 export const APP_CONFIG = {
   // Backend API configuration
-  API_BASE_URL: 'http://localhost:5000/api',
+  API_BASE_URL: 'https://whatsapp-dupe-server.onrender.com/api',
   
   // WhatsApp Business API configuration
   // You should replace this with your actual WhatsApp Business phone number

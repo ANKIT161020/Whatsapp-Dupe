@@ -92,7 +92,7 @@ if (config.env !== 'production') {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
   logger.info(`SWAGGER: API Docs Available`,{
     meta:{
-      DOC_URL:`http://localhost:${config.port}/api-docs`
+      DOC_URL:`https://whatsapp-dupe-server.onrender.com/api-docs`
     }});
 }
 

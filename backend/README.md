@@ -122,7 +122,7 @@ You should see console output indicating successful MongoDB connection and serve
 🌐 API Endpoints
 The backend exposes the following RESTful API endpoints:
 
-Base URL: http://localhost:5000 (or your deployed backend URL)
+Base URL: https://whatsapp-dupe-server.onrender.com/ (or your deployed backend URL)
 
 1. Webhook Endpoint
    Purpose: Receives incoming WhatsApp webhook payloads (new messages, status updates).
