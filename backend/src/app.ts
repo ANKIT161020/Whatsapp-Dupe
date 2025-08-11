@@ -26,13 +26,17 @@ const app = express();
 app.use(helmet());
 
 // Enable CORS
-app.use(cors());
-// For specific origins in production:
-// app.use(cors({
-//   origin: 'https://your-frontend.com',
-//   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-//   credentials: true
-// }));
+if (config.env === 'production') {
+  app.use(cors({
+    origin: [
+      'https://whatsapp-dupe.vercel.app/', // Replace with your actual frontend URL
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
+    credentials: true
+  }));
+} else {
+  app.use(cors()); // Allow all origins in development
+}
 
 // This middleware will serve files like favicon.ico, images, etc.
 // from the 'public' folder at the root of your project.

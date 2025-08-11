@@ -11,7 +11,6 @@ const swaggerDefinition = {
     contact: {
       name: 'Ankit',
       email: 'abhanushali2808@gmail.com',
-      url: 'https://yourwebsite.com',
     },
   },
   servers: [
